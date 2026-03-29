@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multinomial–Dirichlet Bayesian Updating</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2129;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --accent: #58a6ff;
+  --accent2: #3fb950;
+  --accent3: #f0883e;
+  --face1: #ff6b6b;
+  --face2: #ffa94d;
+  --face3: #ffd43b;
+  --face4: #69db7c;
+  --face5: #4dabf7;
+  --face6: #cc5de8;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'IBM Plex Sans', 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--border);
+}
+header h1 {
+  font-size: 1.8em;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+header h1 span { color: var(--accent); }
+header p {
+  color: var(--text-dim);
+  font-size: 0.95em;
+  max-width: 750px;
+  margin: 0 auto;
+  font-weight: 300;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .grid { grid-template-columns: 1fr; }
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.panel-title {
+  font-size: 0.78em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.prob-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85em;
+}
+.prob-row .face-dot {
+  width: 24px; height: 24px;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.75em; color: #fff;
+  flex-shrink: 0;
+}
+.prob-row input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+}
+.prob-row input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+}
+.prob-row .val {
+  width: 48px;
+  text-align: right;
+  color: var(--accent);
+  font-weight: 500;
+}
+.prob-sum {
+  text-align: right;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8em;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+.prob-sum.invalid { color: var(--face1); }
+.prob-sum.valid { color: var(--accent2); }
+.alpha-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85em;
+}
+.alpha-row input {
+  width: 56px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  padding: 4px 6px;
+  text-align: center;
+  font-family: inherit;
+  font-size: inherit;
+}
+.alpha-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.controls {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 16px;
+}
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--border); }
+.btn.primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.btn.primary:hover { opacity: 0.85; }
+.btn.danger {
+  border-color: var(--face1);
+  color: var(--face1);
+}
+.btn.danger:hover { background: rgba(255,107,107,0.12); }
+.batch-row {
+  display: flex; gap: 8px; align-items: center; margin-top: 8px;
+}
+.batch-row input {
+  width: 70px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  padding: 6px 8px;
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85em;
+}
+.batch-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.dice-result {
+  text-align: center;
+  margin: 16px 0;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.die-face {
+  width: 52px; height: 52px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5em; font-weight: 700; color: #fff;
+  animation: popIn 0.25s ease;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+@keyframes popIn {
+  0% { transform: scale(0.3) rotate(-20deg); opacity:0; }
+  60% { transform: scale(1.15) rotate(3deg); }
+  100% { transform: scale(1) rotate(0); opacity:1; }
+}
+.obs-bar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82em;
+}
+.obs-bar .bar-track {
+  flex: 1;
+  height: 18px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.obs-bar .bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  min-width: 0;
+}
+.obs-bar .count {
+  width: 32px;
+  text-align: right;
+  font-weight: 500;
+}
+.chart-area {
+  position: relative;
+}
+.chart-tabs {
+  display: flex; gap: 4px; margin-bottom: 12px;
+}
+.chart-tab {
+  padding: 6px 14px;
+  border-radius: 5px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.78em;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.chart-tab.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+canvas {
+  width: 100% !important;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+.stat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+}
+.stat-card .label {
+  font-size: 0.65em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.stat-card .value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.info-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-top: 16px;
+  font-size: 0.82em;
+  line-height: 1.7;
+  color: var(--text-dim);
+}
+.info-box strong { color: var(--text); font-weight: 600; }
+.info-box code {
+  font-family: 'IBM Plex Mono', monospace;
+  background: var(--surface);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.95em;
+  color: var(--accent);
+}
+.total-rolls {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85em;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 8px;
+}
+.total-rolls span { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Multinomial–<span>Dirichlet</span> Bayesian Updating (베이즈 갱신)</h1>
+    <p>True Probability (실제 확률)을 설정하고, Observation (관측)이 누적될수록 Posterior Distribution (사후분포)이 어떻게 변화하는지 직접 확인하세요.</p>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT PANEL -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="panel">
+        <div class="panel-title">True Probability (실제 확률) θ</div>
+        <div id="prob-sliders"></div>
+        <div class="prob-sum" id="prob-sum">Sum (합) = 1.000</div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn" style="flex:1;min-width:0;" onclick="setUniform()">Uniform (균등)</button>
+          <button class="btn" style="flex:1;min-width:0;" onclick="setPreset([0.5,0.1,0.1,0.1,0.1,0.1])">Biased (편향)</button>
+          <button class="btn" style="flex:1;min-width:0;" onclick="setPreset([0.05,0.05,0.05,0.05,0.05,0.75])">Heavy 6</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Prior (사전분포) α — Dirichlet</div>
+        <div id="alpha-inputs"></div>
+        <button class="btn" style="margin-top:8px;width:100%;" onclick="setUniformAlpha()">Set All (모두) α = 1</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Roll Dice (주사위 굴리기)</div>
+        <div class="controls">
+          <button class="btn primary" onclick="rollOnce()" style="flex:1;">🎲 Roll Once (1회)</button>
+        </div>
+        <div class="batch-row">
+          <input type="number" id="batch-n" value="10" min="1" max="10000">
+          <button class="btn" onclick="rollBatch()" style="flex:1;">Repeat N (N회 반복)</button>
+        </div>
+        <div class="batch-row">
+          <button class="btn" onclick="rollBatch100()" style="flex:1;">+100</button>
+          <button class="btn" onclick="rollBatch1000()" style="flex:1;">+1000</button>
+          <button class="btn danger" onclick="resetAll()">Reset (초기화)</button>
+        </div>
+        <div class="dice-result" id="dice-result"></div>
+        <div class="total-rolls">Total Observations (총 관측): <span id="total-rolls">0</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Observation Count (관측 횟수)</div>
+        <div id="obs-bars"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="panel chart-area">
+        <div class="panel-title">Posterior Distribution (사후분포)</div>
+        <div class="chart-tabs">
+          <button class="chart-tab active" data-view="bar" onclick="switchView('bar')">Posterior Mean (사후 기대값)</button>
+          <button class="chart-tab" data-view="marginal" onclick="switchView('marginal')">Marginal Distribution (주변분포)</button>
+        </div>
+        <canvas id="mainChart" height="320"></canvas>
+        <div class="stats-row" id="stats-row"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Convergence (수렴 과정)</div>
+        <canvas id="convChart" height="240"></canvas>
+      </div>
+
+      <div class="info-box">
+        <strong>Conjugate Prior (켤레 사전분포) Relationship (관계)</strong><br>
+        Likelihood (가능도): <code>Multinomial(n; θ₁,…,θ₆)</code><br>
+        Prior (사전분포): <code>Dirichlet(α₁,…,α₆)</code><br>
+        Posterior (사후분포): <code>Dirichlet(α₁+n₁,…,α₆+n₆)</code><br><br>
+        Posterior Mean (사후 기대값): <code>E[θᵢ] = (αᵢ+nᵢ) / Σ(αⱼ+nⱼ)</code><br>
+        Observation (관측)이 누적될수록 Posterior (사후분포)가 True Probability (실제 확률) θ로 Converge (수렴)하는 것을 확인하세요.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const FACES = 6;
+const COLORS = ['#ff6b6b','#ffa94d','#ffd43b','#69db7c','#4dabf7','#cc5de8'];
+
+let trueProb = [1/6,1/6,1/6,1/6,1/6,1/6];
+let alpha0 = [1,1,1,1,1,1];
+let counts = [0,0,0,0,0,0];
+let history = [];
+let currentView = 'bar';
+
+function init() {
+  buildProbSliders();
+  buildAlphaInputs();
+  buildObsBars();
+  buildStatsRow();
+  drawMainChart();
+  drawConvChart();
+}
+
+function buildProbSliders() {
+  const el = document.getElementById('prob-sliders');
+  el.innerHTML = '';
+  for (let i = 0; i < FACES; i++) {
+    const row = document.createElement('div');
+    row.className = 'prob-row';
+    row.innerHTML = `
+      <div class="face-dot" style="background:${COLORS[i]}">${i+1}</div>
+      <input type="range" min="0" max="100" value="${Math.round(trueProb[i]*100)}" 
+             oninput="updateProb(${i}, this.value)">
+      <span class="val" id="pval-${i}">${(trueProb[i]*100).toFixed(1)}%</span>
+    `;
+    el.appendChild(row);
+  }
+  updateProbSum();
+}
+
+function updateProb(idx, val) {
+  const newVal = val / 100;
+  const oldVal = trueProb[idx];
+  const delta = newVal - oldVal;
+  
+  // Auto-Redistribute (자동 재분배): remaining faces share the difference proportionally
+  const othersSum = trueProb.reduce((s, p, i) => i === idx ? s : s + p, 0);
+  
+  if (othersSum > 0 && newVal <= 1) {
+    const scale = (1 - newVal) / othersSum;
+    for (let i = 0; i < FACES; i++) {
+      if (i === idx) trueProb[i] = newVal;
+      else trueProb[i] = trueProb[i] * scale;
+    }
+  } else if (newVal >= 1) {
+    // If one face takes 100%, set others to 0
+    for (let i = 0; i < FACES; i++) {
+      trueProb[i] = i === idx ? 1 : 0;
+    }
+  } else {
+    // All others are 0 — distribute remainder equally
+    trueProb[idx] = newVal;
+    const remaining = (1 - newVal) / (FACES - 1);
+    for (let i = 0; i < FACES; i++) {
+      if (i !== idx) trueProb[i] = remaining;
+    }
+  }
+  
+  // Update all sliders and labels
+  for (let i = 0; i < FACES; i++) {
+    const slider = document.querySelector(`#prob-sliders .prob-row:nth-child(${i+1}) input[type=range]`);
+    if (slider) slider.value = Math.round(trueProb[i] * 100);
+    document.getElementById(`pval-${i}`).textContent = (trueProb[i]*100).toFixed(1) + '%';
+  }
+  updateProbSum();
+}
+
+function updateProbSum() {
+  const sum = trueProb.reduce((a,b) => a+b, 0);
+  const el = document.getElementById('prob-sum');
+  el.textContent = `Sum (합) = ${sum.toFixed(3)}`;
+  el.className = Math.abs(sum - 1) < 0.005 ? 'prob-sum valid' : 'prob-sum invalid';
+}
+
+function setUniform() {
+  trueProb = Array(FACES).fill(1/FACES);
+  buildProbSliders();
+}
+
+function setPreset(probs) {
+  trueProb = [...probs];
+  buildProbSliders();
+}
+
+function normalizeProb() {
+  const sum = trueProb.reduce((a,b) => a+b, 0);
+  if (sum > 0) trueProb = trueProb.map(p => p / sum);
+}
+
+function buildAlphaInputs() {
+  const el = document.getElementById('alpha-inputs');
+  el.innerHTML = '';
+  for (let i = 0; i < FACES; i++) {
+    const row = document.createElement('div');
+    row.className = 'alpha-row';
+    row.innerHTML = `
+      <div class="face-dot" style="background:${COLORS[i]};width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75em;color:#fff;flex-shrink:0;">${i+1}</div>
+      <span style="color:var(--text-dim);width:24px;">α${i+1}</span>
+      <input type="number" value="${alpha0[i]}" min="0.01" step="0.5"
+             onchange="updateAlpha(${i}, this.value)">
+    `;
+    el.appendChild(row);
+  }
+}
+
+function updateAlpha(idx, val) {
+  alpha0[idx] = Math.max(0.01, parseFloat(val) || 1);
+  drawMainChart();
+  updateStats();
+}
+
+function setUniformAlpha() {
+  alpha0 = Array(FACES).fill(1);
+  buildAlphaInputs();
+  drawMainChart();
+  updateStats();
+}
+
+function buildObsBars() {
+  const el = document.getElementById('obs-bars');
+  el.innerHTML = '';
+  const total = counts.reduce((a,b) => a+b, 0) || 1;
+  for (let i = 0; i < FACES; i++) {
+    const row = document.createElement('div');
+    row.className = 'obs-bar';
+    const pct = (counts[i] / total * 100);
+    row.innerHTML = `
+      <div class="face-dot" style="background:${COLORS[i]};width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.7em;color:#fff;flex-shrink:0;">${i+1}</div>
+      <div class="bar-track"><div class="bar-fill" id="bar-${i}" style="width:${pct}%;background:${COLORS[i]};opacity:0.8;"></div></div>
+      <span class="count" id="cnt-${i}">${counts[i]}</span>
+    `;
+    el.appendChild(row);
+  }
+}
+
+function updateObsBars() {
+  const total = counts.reduce((a,b) => a+b, 0) || 1;
+  for (let i = 0; i < FACES; i++) {
+    const pct = counts[i] / total * 100;
+    document.getElementById(`bar-${i}`).style.width = pct + '%';
+    document.getElementById(`cnt-${i}`).textContent = counts[i];
+  }
+  document.getElementById('total-rolls').textContent = counts.reduce((a,b)=>a+b,0);
+}
+
+function buildStatsRow() {
+  const el = document.getElementById('stats-row');
+  el.innerHTML = '';
+  for (let i = 0; i < FACES; i++) {
+    const card = document.createElement('div');
+    card.className = 'stat-card';
+    card.innerHTML = `
+      <div class="label" style="color:${COLORS[i]}">Face ${i+1}</div>
+      <div class="value" id="stat-${i}" style="color:${COLORS[i]}">${(posteriorMean(i)*100).toFixed(1)}%</div>
+    `;
+    el.appendChild(card);
+  }
+}
+
+function updateStats() {
+  for (let i = 0; i < FACES; i++) {
+    const el = document.getElementById(`stat-${i}`);
+    if (el) el.textContent = (posteriorMean(i)*100).toFixed(1) + '%';
+  }
+}
+
+function posteriorAlpha(i) { return alpha0[i] + counts[i]; }
+function posteriorSum() { let s=0; for(let i=0;i<FACES;i++) s+=posteriorAlpha(i); return s; }
+function posteriorMean(i) { return posteriorAlpha(i) / posteriorSum(); }
+function posteriorVar(i) {
+  const a = posteriorAlpha(i), s = posteriorSum();
+  return (a * (s - a)) / (s * s * (s + 1));
+}
+
+function betaPDF(x, a, b) {
+  if (x <= 0 || x >= 1) return 0;
+  const logB = lnGamma(a) + lnGamma(b) - lnGamma(a + b);
+  return Math.exp((a-1)*Math.log(x) + (b-1)*Math.log(1-x) - logB);
+}
+
+function lnGamma(z) {
+  if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+  z -= 1;
+  const g = 7;
+  const c = [0.99999999999980993,676.5203681218851,-1259.1392167224028,
+    771.32342877765313,-176.61502916214059,12.507343278686905,
+    -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  let x = c[0];
+  for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+  const t = z + g + 0.5;
+  return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+}
+
+function sampleDie() {
+  normalizeProb();
+  const r = Math.random();
+  let cum = 0;
+  for (let i = 0; i < FACES; i++) {
+    cum += trueProb[i];
+    if (r < cum) return i;
+  }
+  return FACES - 1;
+}
+
+function rollOnce() {
+  const face = sampleDie();
+  counts[face]++;
+  recordHistory();
+  showDie(face);
+  updateAll();
+}
+
+function rollBatch() {
+  const n = parseInt(document.getElementById('batch-n').value) || 10;
+  let lastFace = 0;
+  for (let k = 0; k < n; k++) {
+    lastFace = sampleDie();
+    counts[lastFace]++;
+  }
+  recordHistory();
+  showDie(lastFace, n);
+  updateAll();
+}
+
+function rollBatch100() {
+  let lastFace = 0;
+  for (let k = 0; k < 100; k++) { lastFace = sampleDie(); counts[lastFace]++; }
+  recordHistory();
+  showDie(lastFace, 100);
+  updateAll();
+}
+
+function rollBatch1000() {
+  let lastFace = 0;
+  for (let k = 0; k < 1000; k++) { lastFace = sampleDie(); counts[lastFace]++; }
+  recordHistory();
+  showDie(lastFace, 1000);
+  updateAll();
+}
+
+function recordHistory() {
+  const step = counts.reduce((a,b) => a+b, 0);
+  const means = [];
+  for (let i = 0; i < FACES; i++) means.push(posteriorMean(i));
+  history.push({ step, means });
+}
+
+function showDie(face, batch) {
+  const el = document.getElementById('dice-result');
+  if (batch && batch > 1) {
+    el.innerHTML = `<div class="die-face" style="background:${COLORS[face]}">${face+1}</div>
+                    <span style="font-size:0.85em;color:var(--text-dim);">+ ${batch-1} more</span>`;
+  } else {
+    el.innerHTML = `<div class="die-face" style="background:${COLORS[face]}">${face+1}</div>`;
+  }
+}
+
+function resetAll() {
+  counts = [0,0,0,0,0,0];
+  history = [];
+  document.getElementById('dice-result').innerHTML = '';
+  updateAll();
+}
+
+function updateAll() {
+  updateObsBars();
+  updateStats();
+  drawMainChart();
+  drawConvChart();
+}
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.chart-tab[data-view="${view}"]`).classList.add('active');
+  drawMainChart();
+}
+
+function drawMainChart() {
+  if (currentView === 'bar') drawBarChart();
+  else drawMarginalChart();
+}
+
+function drawBarChart() {
+  const canvas = document.getElementById('mainChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 320 * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = 320;
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 30, right: 20, bottom: 40, left: 50 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  const maxY = Math.max(0.5, ...trueProb, ...Array.from({length:FACES}, (_,i) => posteriorMean(i) + 2*Math.sqrt(posteriorVar(i))));
+  const yScale = ch / maxY;
+
+  ctx.strokeStyle = '#21262d'; ctx.lineWidth = 1;
+  for (let y = 0; y <= maxY; y += 0.1) {
+    const py = pad.top + ch - y * yScale;
+    ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(W - pad.right, py); ctx.stroke();
+  }
+
+  ctx.fillStyle = '#8b949e'; ctx.font = '11px IBM Plex Mono'; ctx.textAlign = 'right';
+  for (let y = 0; y <= maxY; y += 0.1) {
+    const py = pad.top + ch - y * yScale;
+    ctx.fillText((y*100).toFixed(0)+'%', pad.left - 8, py + 4);
+  }
+
+  const barW = cw / FACES;
+  const halfBar = barW * 0.3;
+
+  for (let i = 0; i < FACES; i++) {
+    const cx = pad.left + barW * i + barW / 2;
+
+    const trueH = trueProb[i] * yScale;
+    ctx.fillStyle = COLORS[i] + '33';
+    ctx.strokeStyle = COLORS[i] + '88';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(cx - halfBar - 4, pad.top + ch - trueH, halfBar * 2 + 8, trueH, [4,4,0,0]);
+    ctx.fill(); ctx.stroke();
+
+    const postH = posteriorMean(i) * yScale;
+    ctx.fillStyle = COLORS[i] + 'cc';
+    ctx.beginPath();
+    ctx.roundRect(cx - halfBar, pad.top + ch - postH, halfBar * 2, postH, [3,3,0,0]);
+    ctx.fill();
+
+    const sd = Math.sqrt(posteriorVar(i));
+    const lo = Math.max(0, posteriorMean(i) - 1.96 * sd);
+    const hi = Math.min(1, posteriorMean(i) + 1.96 * sd);
+    ctx.strokeStyle = COLORS[i]; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, pad.top + ch - lo * yScale);
+    ctx.lineTo(cx, pad.top + ch - hi * yScale);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - 5, pad.top + ch - lo * yScale);
+    ctx.lineTo(cx + 5, pad.top + ch - lo * yScale);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - 5, pad.top + ch - hi * yScale);
+    ctx.lineTo(cx + 5, pad.top + ch - hi * yScale);
+    ctx.stroke();
+
+    ctx.fillStyle = '#e6edf3'; ctx.font = '13px IBM Plex Sans'; ctx.textAlign = 'center';
+    ctx.fillText(i + 1, cx, pad.top + ch + 20);
+  }
+
+  // Legend (범례)
+  const legendW = 280;
+  ctx.font = '11px IBM Plex Sans'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#161b22dd';
+  ctx.fillRect(W - pad.right - legendW - 10, pad.top, legendW + 10, 52);
+  ctx.strokeStyle = '#30363d';
+  ctx.strokeRect(W - pad.right - legendW - 10, pad.top, legendW + 10, 52);
+
+  ctx.fillStyle = '#58a6ff44';
+  ctx.fillRect(W - pad.right - legendW, pad.top + 8, 12, 10);
+  ctx.strokeStyle = '#58a6ff88'; ctx.lineWidth = 1;
+  ctx.strokeRect(W - pad.right - legendW, pad.top + 8, 12, 10);
+  ctx.fillStyle = '#8b949e';
+  ctx.fillText('True Prob. (실제 확률)', W - pad.right - legendW + 18, pad.top + 17);
+
+  ctx.fillStyle = '#58a6ffcc';
+  ctx.fillRect(W - pad.right - legendW, pad.top + 28, 12, 10);
+  ctx.fillStyle = '#8b949e';
+  ctx.fillText('Posterior Mean (사후 기대값) ± 95% Credible Interval (신용구간)', W - pad.right - legendW + 18, pad.top + 37);
+}
+
+function drawMarginalChart() {
+  const canvas = document.getElementById('mainChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 320 * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = 320;
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 20, right: 20, bottom: 40, left: 50 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+  const N = 200;
+  const xs = Array.from({length: N}, (_, i) => (i + 0.5) / N);
+
+  let maxPDF = 0;
+  const pdfs = [];
+  for (let f = 0; f < FACES; f++) {
+    const a = posteriorAlpha(f);
+    const b = posteriorSum() - a;
+    const ys = xs.map(x => betaPDF(x, a, b));
+    const m = Math.max(...ys.filter(v => isFinite(v)));
+    if (m > maxPDF) maxPDF = m;
+    pdfs.push(ys);
+  }
+  maxPDF = Math.min(maxPDF, 30);
+
+  ctx.strokeStyle = '#21262d'; ctx.lineWidth = 1;
+  for (let x = 0; x <= 1; x += 0.2) {
+    const px = pad.left + x * cw;
+    ctx.beginPath(); ctx.moveTo(px, pad.top); ctx.lineTo(px, pad.top + ch); ctx.stroke();
+    ctx.fillStyle = '#8b949e'; ctx.font = '10px IBM Plex Mono'; ctx.textAlign = 'center';
+    ctx.fillText((x*100).toFixed(0)+'%', px, H - pad.bottom + 18);
+  }
+
+  for (let f = 0; f < FACES; f++) {
+    ctx.beginPath();
+    ctx.strokeStyle = COLORS[f]; ctx.lineWidth = 2;
+    let started = false;
+    for (let j = 0; j < N; j++) {
+      const px = pad.left + xs[j] * cw;
+      let val = pdfs[f][j];
+      if (!isFinite(val)) val = maxPDF;
+      val = Math.min(val, maxPDF);
+      const py = pad.top + ch - (val / maxPDF) * ch;
+      if (!started) { ctx.moveTo(px, py); started = true; }
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    ctx.lineTo(pad.left + xs[N-1] * cw, pad.top + ch);
+    ctx.lineTo(pad.left + xs[0] * cw, pad.top + ch);
+    ctx.closePath();
+    ctx.fillStyle = COLORS[f] + '18';
+    ctx.fill();
+
+    const tx = pad.left + trueProb[f] * cw;
+    ctx.strokeStyle = COLORS[f] + '66'; ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(tx, pad.top); ctx.lineTo(tx, pad.top + ch); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.fillStyle = '#8b949e'; ctx.font = '11px IBM Plex Sans'; ctx.textAlign = 'center';
+  ctx.fillText('θ', W / 2, H - 4);
+}
+
+function drawConvChart() {
+  const canvas = document.getElementById('convChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 240 * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = 240;
+  ctx.clearRect(0, 0, W, H);
+
+  if (history.length < 2) {
+    ctx.fillStyle = '#8b949e'; ctx.font = '13px IBM Plex Sans'; ctx.textAlign = 'center';
+    ctx.fillText('Roll the dice to see Convergence (주사위를 굴려 수렴 과정을 확인하세요)', W/2, H/2);
+    return;
+  }
+
+  const pad = { top: 20, right: 20, bottom: 36, left: 50 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  const maxStep = history[history.length-1].step;
+  const xScale = cw / maxStep;
+
+  let maxY = 0.5;
+  for (const h of history) for (const m of h.means) if (m > maxY) maxY = m;
+  maxY = Math.min(1, maxY * 1.15);
+  const yScale = ch / maxY;
+
+  ctx.strokeStyle = '#21262d'; ctx.lineWidth = 1;
+  for (let y = 0; y <= maxY; y += 0.1) {
+    const py = pad.top + ch - y * yScale;
+    ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(W - pad.right, py); ctx.stroke();
+    ctx.fillStyle = '#8b949e'; ctx.font = '10px IBM Plex Mono'; ctx.textAlign = 'right';
+    ctx.fillText((y*100).toFixed(0)+'%', pad.left - 6, py + 4);
+  }
+
+  for (let f = 0; f < FACES; f++) {
+    ctx.strokeStyle = COLORS[f] + '44'; ctx.lineWidth = 1;
+    ctx.setLineDash([6,4]);
+    const py = pad.top + ch - trueProb[f] * yScale;
+    ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(W - pad.right, py); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  for (let f = 0; f < FACES; f++) {
+    ctx.beginPath();
+    ctx.strokeStyle = COLORS[f]; ctx.lineWidth = 1.8;
+    for (let j = 0; j < history.length; j++) {
+      const px = pad.left + history[j].step * xScale;
+      const py = pad.top + ch - history[j].means[f] * yScale;
+      if (j === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#8b949e'; ctx.font = '11px IBM Plex Sans'; ctx.textAlign = 'center';
+  ctx.fillText('Number of Observations (관측 횟수)', W/2, H - 4);
+}
+
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r) {
+    if (!Array.isArray(r)) r = [r,r,r,r];
+    this.moveTo(x+r[0],y);
+    this.lineTo(x+w-r[1],y); this.arcTo(x+w,y,x+w,y+r[1],r[1]);
+    this.lineTo(x+w,y+h-r[2]); this.arcTo(x+w,y+h,x+w-r[2],y+h,r[2]);
+    this.lineTo(x+r[3],y+h); this.arcTo(x,y+h,x,y+h-r[3],r[3]);
+    this.lineTo(x,y+r[0]); this.arcTo(x,y,x+r[0],y,r[0]);
+    this.closePath();
+  };
+}
+
+window.addEventListener('resize', () => { drawMainChart(); drawConvChart(); });
+init();
+history.push({ step: 0, means: Array.from({length:FACES}, (_,i) => posteriorMean(i)) });
+</script>
+
+</body>
+</html>
