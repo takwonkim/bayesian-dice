@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Takwon Kim — Mathematician</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f5f0;--ink:#141210;--ink-2:#3d3a36;--ink-3:#7a7670;--ink-4:#b0aca5;--rule:#ddd9d1;--warm:#8b4513;--serif:'Libre Baskerville',Georgia,serif;--sans:'Outfit',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;--ease:cubic-bezier(.25,.46,.45,.94);--max:1080px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:60px}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+::selection{background:var(--warm);color:#fff}
+a{color:inherit}img{display:block;max-width:100%}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(247,245,240,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--rule);transition:box-shadow .3s}
+nav.scrolled{box-shadow:0 1px 12px rgba(0,0,0,.06)}
+.nav-w{max-width:var(--max);margin:0 auto;padding:0 28px;height:50px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:var(--serif);font-size:.95rem;font-weight:700;text-decoration:none;color:var(--ink)}
+.nav-links{display:flex;gap:2px}
+.nav-links a{font-size:.7rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;text-decoration:none;color:var(--ink-3);padding:16px 12px;transition:color .2s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--ink)}
+.nav-links a.active::after{content:'';position:absolute;bottom:-1px;left:12px;right:12px;height:2px;background:var(--ink)}
+.burger{display:none;background:none;border:none;cursor:pointer;padding:6px}
+.burger svg{stroke:var(--ink);display:block}
+
+.hero{position:relative;overflow:hidden}
+.hero-img{width:100%;height:520px;object-fit:cover;filter:brightness(.88) contrast(1.05)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,16,.75) 0%,rgba(20,18,16,.15) 60%,transparent 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:48px 28px 44px;max-width:var(--max);margin:0 auto}
+.hero-content .label{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:12px}
+.hero-content h1{font-family:var(--serif);font-size:3.2rem;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.03em;margin-bottom:8px}
+.hero-content h1 .kr{font-family:var(--sans);font-weight:300;font-size:1.3rem;color:rgba(255,255,255,.55);margin-left:12px}
+.hero-content .tagline{font-size:.92rem;color:rgba(255,255,255,.7);max-width:560px;line-height:1.7;font-weight:300}
+
+.info-bar{border-bottom:1px solid var(--rule);padding:18px 0}
+.info-bar-inner{max-width:var(--max);margin:0 auto;padding:0 28px;display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+.info-bar a,.info-bar span{font-size:.76rem;color:var(--ink-3);text-decoration:none;transition:color .2s}
+.info-bar a:hover{color:var(--warm)}
+.info-bar .dot{color:var(--ink-4)}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+.sec{padding:56px 0 44px}
+.sec+.sec{border-top:1px solid var(--rule)}
+.sec-head{margin-bottom:32px}
+.sec-label{font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-4);margin-bottom:6px}
+.sec-title{font-family:var(--serif);font-size:1.65rem;font-weight:700;letter-spacing:-.02em}
+
+.tags{display:flex;flex-wrap:wrap;gap:8px;padding:28px 0;border-bottom:1px solid var(--rule)}
+.tag{font-size:.7rem;font-weight:600;letter-spacing:.06em;padding:5px 14px;border:1.5px solid var(--ink);color:var(--ink);text-transform:uppercase;transition:all .2s var(--ease)}
+.tag:hover{background:var(--ink);color:var(--bg)}
+
+.duo{display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:start}
+.duo-photo{position:sticky;top:72px}
+.duo-photo img{width:100%;object-fit:cover;filter:grayscale(12%);transition:filter .4s;margin-bottom:12px}
+.duo-photo img:last-child{margin-bottom:0}
+.duo-photo img:hover{filter:grayscale(0%)}
+
+.pub-cat{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-4);padding:10px 0;border-bottom:1px solid var(--rule);margin-top:32px}
+.pub-cat:first-of-type{margin-top:0}
+.p{padding:14px 0;border-bottom:1px solid rgba(0,0,0,.04);display:grid;grid-template-columns:26px 1fr;gap:10px}
+.p-i{font-family:var(--mono);font-size:.68rem;color:var(--ink-4);text-align:right;padding-top:3px}
+.p-t{font-size:.9rem;font-weight:500;line-height:1.5}
+.p-t a{text-decoration:none;transition:color .2s}
+.p-t a:hover{color:var(--warm)}
+.p-m{font-size:.78rem;color:var(--ink-3);margin-top:2px;line-height:1.5}
+.p-m a{color:var(--warm);text-decoration:none}
+.p-m a:hover{text-decoration:underline}
+.p-m .j{font-family:var(--serif);font-style:italic;font-size:.8rem;color:var(--ink-2)}
+.p-badge{display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;background:#fef3c7;color:#92400e;margin-top:4px}
+
+.t-year{font-family:var(--serif);font-size:1.8rem;font-weight:400;color:var(--ink-4);margin-top:32px;margin-bottom:10px}
+.t-year:first-of-type{margin-top:0}
+.t{padding:8px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:.85rem;color:var(--ink-2);line-height:1.55}
+.t a{color:var(--ink);font-weight:500;text-decoration:none;transition:color .2s}
+.t a:hover{color:var(--warm)}
+.t .v{color:var(--ink-3);font-size:.8rem}
+
+.teach-sem{font-family:var(--serif);font-size:1.05rem;font-weight:700;margin-top:24px;margin-bottom:8px}
+.teach-sem:first-of-type{margin-top:0}
+.teach-sem small{font-family:var(--sans);font-weight:400;color:var(--ink-3);font-size:.82rem}
+.tl{list-style:none}
+.tl li{font-size:.86rem;color:var(--ink-2);padding:4px 0 4px 18px;position:relative}
+.tl li::before{content:'·';position:absolute;left:4px;color:var(--ink-4);font-weight:700}
+
+.cv-cat{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-4);margin-bottom:14px;margin-top:32px}
+.cv-cat:first-of-type{margin-top:0}
+.cv-row{display:grid;grid-template-columns:130px 1fr;gap:14px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.04);font-size:.86rem}
+.cv-d{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);padding-top:2px}
+.cv-c{color:var(--ink-2)}.cv-c strong{color:var(--ink);font-weight:600}.cv-c a{color:var(--warm);text-decoration:none}
+
+.links-row{display:flex;flex-wrap:wrap;gap:8px}
+.lnk{font-size:.76rem;font-weight:600;letter-spacing:.04em;text-decoration:none;color:var(--ink);padding:9px 18px;border:1.5px solid var(--rule);transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:7px}
+.lnk:hover{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.lnk svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+footer{border-top:1px solid var(--rule);margin-top:40px;padding:28px 0}
+.foot-inner{max-width:var(--max);margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;font-size:.7rem;color:var(--ink-4);font-family:var(--mono)}
+
+.fi{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}.fi.vis{opacity:1;transform:none}
+
+@media(max-width:820px){
+  .duo{grid-template-columns:1fr;gap:28px}
+  .duo-photo{position:static;order:-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .duo-photo img{height:200px;margin-bottom:0}
+  .hero-img{height:380px}.hero-content h1{font-size:2.2rem}.hero-content h1 .kr{display:block;margin:6px 0 0}
+  .cv-row{grid-template-columns:1fr;gap:2px}
+}
+@media(max-width:600px){
+  .wrap,.nav-w,.foot-inner,.info-bar-inner,.hero-content{padding-left:18px;padding-right:18px}
+  .hero-img{height:300px}.hero-content h1{font-size:1.8rem}.hero-content{padding-bottom:32px}
+  .nav-links{display:none;position:absolute;top:50px;left:0;right:0;background:rgba(247,245,240,.98);backdrop-filter:blur(14px);flex-direction:column;padding:8px 18px 16px;border-bottom:1px solid var(--rule)}
+  .nav-links.open{display:flex}.nav-links a{padding:10px 0}.burger{display:block}
+  .duo-photo{grid-template-columns:1fr}
+  .foot-inner{flex-direction:column;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav"><div class="nav-w">
+  <a href="#" class="nav-logo">Takwon Kim</a>
+  <div class="nav-links" id="nl">
+    <a href="#about">About</a><a href="#research">Research</a><a href="#talks">Talks</a><a href="#teaching">Teaching</a><a href="#cv">CV</a><a href="#links">Links</a>
+  </div>
+  <button class="burger" onclick="document.getElementById('nl').classList.toggle('open')" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
+</div></nav>
+
+<div class="hero" id="about">
+  <img class="hero-img" src="https://lh3.googleusercontent.com/sitesv/APaQ0SQ4CymFj78Dt6yaqGhSoxVnqlgdQh0oimwwr-mukXzgn5g915UzD4ohyOk-iBWekjlyDZCK006OYti4qWt8zCv9jYCdS4j15x5RsegpgMh-6l5QgFJxdQDH0feYqwAWmZ86TlSJ2Sez7461-bhMn69ZWr0cMxLSzK5hVoPvohm2AwEVlUOwkBvouQqTgPouD1wBlubQykyD9mIKQvwkVMsHzglyFxvF9XyETGg=w1280" alt="Takwon Kim">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="label">Assistant Professor · Sungshin Women's University</p>
+    <h1>Takwon Kim<span class="kr">김탁원</span></h1>
+    <p class="tagline">My research lies at the intersection of free boundary problems, regularity theory for degenerate equations, portfolio selection, and statistical testing.</p>
+  </div>
+</div>
+
+<div class="info-bar"><div class="info-bar-inner">
+  <a href="mailto:takwon@sungshin.ac.kr">takwon@sungshin.ac.kr</a><span class="dot">·</span>
+  <a href="https://scholar.google.com/citations?user=Hvyhf20AAAAJ&hl=ko">Google Scholar</a><span class="dot">·</span>
+  <a href="https://arxiv.org/a/0000-0002-2595-5319.html">arXiv</a><span class="dot">·</span>
+  <a href="https://orcid.org/0000-0002-2595-5319">ORCID</a><span class="dot">·</span>
+  <span>Room 803, Crystal A · Seongbuk-gu, Seoul 02844</span>
+</div></div>
+
+<div class="wrap"><div class="tags fi">
+  <span class="tag">Free Boundary Problems</span><span class="tag">Portfolio Selection</span><span class="tag">Regularity Theory</span><span class="tag">Statistical Testing</span>
+</div></div>
+
+<!-- RESEARCH -->
+<div class="wrap"><section class="sec fi" id="research">
+  <div class="sec-head"><p class="sec-label">01</p><h2 class="sec-title">Research</h2></div>
+  <div class="duo"><div>
+    <p class="pub-cat">Preprints</p>
+    <div class="p"><span class="p-i">08</span><div><div class="p-t">Liouville-type theorems for Lane–Emden inequalities involving nonlocal operators</div><div class="p-m">with <a href="https://sites.google.com/view/taehunlee/">T. Lee</a> · 2026 · <a href="https://doi.org/10.48550/arXiv.2602.13822">arXiv</a> · 10pp</div></div></div>
+    <div class="p"><span class="p-i">07</span><div><div class="p-t">When do loss-averse households retire? Intertemporal loss aversion and sticky consumption</div><div class="p-m">with <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2026 · <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6199978">SSRN</a> · 14pp</div></div></div>
+    <div class="p"><span class="p-i">06</span><div><div class="p-t">Optimal early retirement with target wealth and borrowing constraints</div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2025 · <a href="https://dx.doi.org/10.2139/ssrn.5956194">SSRN</a> · 34pp</div></div></div>
+    <div class="p"><span class="p-i">05</span><div><div class="p-t">Dynamic asset allocation with partially reversible retirement decisions</div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2025 · <a href="https://dx.doi.org/10.2139/ssrn.5362992">SSRN</a> · 31pp</div></div></div>
+    <div class="p"><span class="p-i">04</span><div><div class="p-t">Finite-horizon optimal consumption, investment, and retirement decisions with a subsistence consumption constraint</div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2025 · <a href="https://dx.doi.org/10.2139/ssrn.5188179">SSRN</a> · 21pp</div></div></div>
+    <div class="p"><span class="p-i">03</span><div><div class="p-t">Optimal portfolio selection and early retirement with target wealth constraints</div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2025 · <a href="https://dx.doi.org/10.2139/ssrn.5143989">SSRN</a> · 20pp</div></div></div>
+    <div class="p"><span class="p-i">02</span><div><div class="p-t">Existence of solutions and Lipschitz continuity of free boundary for the obstacle problem of the porous medium equations</div><div class="p-m">with <a href="https://sites.google.com/view/mathematicskim/">S. Kim</a>, <a href="https://sites.google.com/view/jinwanpark">J. Park</a> · 2024 · 19pp</div></div></div>
+    <div class="p"><span class="p-i">01</span><div><div class="p-t">The finite-horizon retirement problem with borrowing constraint: A zero-sum stopper vs. singular-controller game</div><div class="p-m">with <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a>, <a href="https://user.scnu.edu.cn/profile/index/user.html?site=maths&uid=9761">Z. Yang</a> · 2023 · <a href="https://dx.doi.org/10.2139/ssrn.5188179">SSRN</a> · 46pp</div><span class="p-badge">R&R 3rd round — Math. Oper. Res.</span></div></div>
+
+    <p class="pub-cat">Published</p>
+    <div class="p"><span class="p-i">11</span><div><div class="p-t">The finite-horizon reversible investment problem with a CEV model</div><div class="p-m">with <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2026 · <span class="j">SIAM J. Control Optim.</span> (to appear) · <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4680329">SSRN</a></div></div></div>
+    <div class="p"><span class="p-i">10</span><div><div class="p-t"><a href="https://doi.org/10.1016/j.frl.2026.109756">Working longer, not harder: target wealth, leisure, and retirement</a></div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2026 · <span class="j">Finance Res. Lett.</span> 96, 109756</div></div></div>
+    <div class="p"><span class="p-i">09</span><div><div class="p-t"><a href="https://doi.org/10.1016/j.matcom.2025.07.056">Optimal contract design with labor-leisure choice under limited commitment</a></div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2026 · <span class="j">Math. Comput. Simulation</span> 239, 967–985</div></div></div>
+    <div class="p"><span class="p-i">08</span><div><div class="p-t"><a href="https://doi.org/10.1080/14697688.2025.2534601">Optimal portfolio and labor-leisure decisions with intolerance for declining standard of living</a></div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2025 · <span class="j">Quant. Finance</span> 25(8), 1293–1313</div></div></div>
+    <div class="p"><span class="p-i">07</span><div><div class="p-t"><a href="https://www3.stat.sinica.edu.tw/ss_newpaper/SS-2024-0330_na.pdf">Weighted conditional network testing for multiple high-dimensional correlated data sets</a></div><div class="p-m">with <a href="https://sites.google.com/vt.edu/inyoungk/home">I. Kim</a>, <a href="https://www.math.snu.ac.kr/~kiahm/">K.-A. Lee</a> · 2026+ · <span class="j">Statistica Sinica</span> (to appear)</div></div></div>
+    <div class="p"><span class="p-i">06</span><div><div class="p-t"><a href="https://www.sciencedirect.com/science/article/pii/S0096300324006763">Optimal portfolio and retirement decisions with costly job switching options</a></div><div class="p-m">with <a href="https://sites.google.com/view/jongbongan/">J. An</a>, <a href="https://sites.google.com/site/junkeejeon/home">J. Jeon</a> · 2025 · <span class="j">Appl. Math. Comput.</span> 491, 129215</div></div></div>
+    <div class="p"><span class="p-i">05</span><div><div class="p-t"><a href="https://doi.org/10.1007/s00208-024-02898-6">Generalized Schauder theory and its application to degenerate/singular parabolic equations</a></div><div class="p-m">with <a href="https://www.math.snu.ac.kr/~kiahm/">K.-A. Lee</a>, <a href="https://sites.google.com/view/hyungsungyun">H. Yun</a> · 2024 · <span class="j">Math. Ann.</span> 390, 6049–6109</div></div></div>
+    <div class="p"><span class="p-i">04</span><div><div class="p-t"><a href="https://doi.org/10.1007/s13540-023-00233-5">Pricing vulnerable options in fractional Brownian markets</a></div><div class="p-m">with <a href="https://www.math.snu.ac.kr/~kiahm/">K.-A. Lee</a>, <a href="https://sites.google.com/view/jinwanpark">J. Park</a>, <a href="https://fmath613.pusan.ac.kr/fmath613/index.do">J.-H. Yoon</a> · 2024 · <span class="j">Fract. Calc. Appl. Anal.</span> 27(1), 247–280</div></div></div>
+    <div class="p"><span class="p-i">03</span><div><div class="p-t"><a href="https://doi.org/10.1016/j.na.2023.113282">A double obstacle problem in an optimal investment problem</a></div><div class="p-m">with <a href="https://www.math.snu.ac.kr/~kiahm/">K.-A. Lee</a>, <a href="https://sites.google.com/view/jinwanpark">J. Park</a> · 2023 · <span class="j">Nonlinear Anal.</span> 232, No. 113282</div></div></div>
+    <div class="p"><span class="p-i">02</span><div><div class="p-t"><a href="https://doi.org/10.1016/j.jde.2022.11.049">Higher regularity up to boundary for degenerate parabolic equations</a></div><div class="p-m">with <a href="https://www.math.snu.ac.kr/~kiahm/">K.-A. Lee</a>, <a href="https://sites.google.com/view/hyungsungyun">H. Yun</a> · 2023 · <span class="j">J. Differential Equations</span> 348, 223–277</div></div></div>
+    <div class="p"><span class="p-i">01</span><div><div class="p-t"><a href="https://doi.org/10.1002/asmb.2730">New approach and analysis of the generalized CEV model</a></div><div class="p-m">with <a href="https://sites.google.com/vt.edu/inyoungk/home">I. Kim</a>, <a href="https://www.math.snu.ac.kr/~kiahm/">K.-A. Lee</a>, <a href="https://fmath613.pusan.ac.kr/fmath613/index.do">J.-H. Yoon</a> · 2023 · <span class="j">Appl. Stoch. Models Bus. Ind.</span> 39(1), 114–155</div></div></div>
+  </div>
+  <figure class="duo-photo">
+    <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SSkMulqaSKcDGs8c1y4KYLwBghd-a3BdL8k8R0kgsDY4yxUBBxQ5pO66H3vgi8KL3v5yZ961guy1aX3tz3FMZLyOFtKspo0wb3A55M5jdjvK3TPKBrJXp6z0htyvo0oHUu5h337sUH7weNb7HhrC58PgTzl3PqJ7-rLjqr1yvw8QeYh-v-_mxzGWIk=w1280" alt="">
+    <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SQARIDf50CkH1JNXUVEqEIm46DYxK0T2lp2p5umc5Wp0oLQVtjSZ2-2FK6xpVlfkyW2PlQ5djLxRlXF2XFJ4ngHm3VLiG-uNGTsmJHGhn2blmmQJ6OlgTlEQ7wGQJUiWBVllwCovudQlORw_eu3D1ayWCiw41GkrZFcZUnkO8aiObDAq44KqijFHPSjFtyc9KnEuXm34WI4TAkZ44fwfH0-CKPNWxbHDXEfQy8=w1280" alt="">
+  </figure>
+</div></section></div>
+
+<!-- TALKS -->
+<div class="wrap"><section class="sec fi" id="talks">
+  <div class="sec-head"><p class="sec-label">02</p><h2 class="sec-title">Talks</h2></div>
+  <div class="duo"><div>
+    <h3 class="t-year">2025</h3>
+    <div class="t"><a href="https://saarc.kaist.ac.kr/boards/view/seminars/50">SAARC Colloquium</a>, <span class="v">KAIST — Nov 18</span></div>
+    <div class="t">HYU Seminar, <span class="v">Hanyang Univ. — Nov 7</span></div>
+    <div class="t"><a href="https://www.kms.or.kr/conference/meeting/index.html?period=90">2025 KMS Annual Meeting</a>, <span class="v">Seoul — Oct 24</span></div>
+    <div class="t"><a href="https://www.math.snu.ac.kr/bbs/board.php?bo_table=Math_Seminar&wr_id=42650&page=2&year=2025&month=9&day=21&page=2">Mathematical Finance Seminar</a>, <span class="v">SNU — Sep 16</span></div>
+    <div class="t"><a href="https://sites.google.com/site/junkeejeon/workshop/2025-pde-in-mf">Workshop on FBP in Math. Finance</a>, <span class="v">Seoul — Sep 12</span></div>
+    <div class="t"><a href="https://www.sungshin.ac.kr/math-statistics/17397/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGbWF0aC1zdGF0aXN0aWNzJTJGNDQ3NSUyRjE0NTU0NSUyRmFydGNsVmlldy5kbyUzRg%3D%3D">FinTech Data Science Colloquium</a>, <span class="v">Online — Aug 20</span></div>
+    <div class="t"><a href="https://sites.google.com/view/2025-pde-summer/home">Summer School on Elliptic & Parabolic PDEs</a>, <span class="v">Jeju — Jul 7</span></div>
+    <div class="t"><a href="https://www.kms.or.kr/conference/2025_spring/">2025 KMS Spring Meeting</a>, <span class="v">KAIST — Apr 25</span></div>
+    <div class="t">Recent Issues Financial Engineering, <span class="v">Ajou Univ. — Apr 11</span></div>
+    <div class="t"><a href="https://www.kias.re.kr/kias/activities/seminars/view.do?seqno=PGN1720250206-0004&menuNo=404003">Analysis, PDE & Probability Seminar</a>, <span class="v">KIAS — Feb 20</span></div>
+    <h3 class="t-year">2024</h3>
+    <div class="t"><a href="https://www.kms.or.kr/conference/2024_fall/">2024 KMS Annual Meeting</a> (SS-18), <span class="v">SKKU — Oct 26</span></div>
+    <div class="t"><a href="https://www.kms.or.kr/conference/2024_fall/">2024 KMS Annual Meeting</a> (SS-08), <span class="v">SKKU — Oct 25</span></div>
+    <div class="t"><a href="https://math.catholic.ac.kr/math/community/notice.do?mode=view&articleNo=249718">Colloquium</a>, <span class="v">Catholic Univ. of Korea — Oct 22</span></div>
+    <div class="t">Colloquium, <span class="v">Incheon National Univ. — Oct 17</span></div>
+    <div class="t"><a href="https://sites.google.com/view/summer-school-pde-2024">Summer School on PDEs</a> (Lectures), <span class="v">Hanyang Univ. — Aug 5–7</span></div>
+    <div class="t">Applied Mathematics Seminar, <span class="v">Kongju National Univ. — Jun 14</span></div>
+    <div class="t"><a href="https://sites.google.com/khu.ac.kr/2024-workshop-mf-jeju/home?authuser=0">Workshop on Math. Finance at Jeju</a>, <span class="v">Jeju — Jun 1</span></div>
+    <div class="t">Applied Mathematics Seminar, <span class="v">Kongju National Univ. — Feb 14</span></div>
+    <h3 class="t-year">2023</h3>
+    <div class="t"><a href="https://sites.google.com/view/2023npde/home">Workshop on Elliptic & Parabolic PDEs</a>, <span class="v">Jeju — Dec 18</span></div>
+    <div class="t"><a href="https://sites.google.com/site/junkeejeon/2nd-mini-workshop#h.vn5poqw1r108">KMS Special Conf. with Fields Medalists</a>, <span class="v">SNU — Oct 27</span></div>
+    <div class="t"><a href="https://sites.google.com/site/junkeejeon/2nd-mini-workshop#h.vn5poqw1r108">Mini-workshop on Math. Finance</a>, <span class="v">KHU — Aug 23</span></div>
+    <div class="t"><a href="https://www.cmstatistics.org/EcoSta2023/index.php">EcoSta 2023</a>, <span class="v">Waseda, Tokyo — Aug 2</span></div>
+    <div class="t"><a href="https://ksiam.org/Conference/ConferenceView.asp?AC=0&CODE=CC20230401&B_CATE=BBC1">2023 KSIAM Spring Conference</a>, <span class="v">Pyeongchang — May 19</span></div>
+    <div class="t">BRL Seminar, <span class="v">Hanyang Univ. — May 18</span></div>
+    <h3 class="t-year">2022</h3>
+    <div class="t"><a href="http://qsms.math.snu.ac.kr/board_axne29/2388">Rookies Workshop 2022</a>, <span class="v">Yangpyeong — Nov 4</span></div>
+    <div class="t">Workshop on Elliptic & Parabolic PDEs, <span class="v">Jeju (Online) — Feb 11</span></div>
+    <h3 class="t-year">2020</h3>
+    <div class="t">Workshop on Elliptic & Parabolic PDEs, <span class="v">Sol Beach, Yangyang — Jan 29</span></div>
+  </div>
+  <figure class="duo-photo">
+    <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SQUw6XZIHzG6KIDAeWKVxOcnIfJ79l3W7v6u9GG6YJjnHlFhqVbOtzExl98xISUi8wwXO41lW0DjDSkUmZf5aJjw1xwRPXKBYRu5YFJUfo0iNhMBOiETZCPfwnV4yLjUp3AKr5ur5RPkH2pmv5gudpyVVLhHqmW1PXM2LLK8hDGgYDy2t1J7W5XL8cCdT0Vflcy4CEINrW9hQjDLWvyUV0zg8x9OqseBIZSRsU=w1280" alt="">
+    <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SS0v6pqA48il_0dmAfPP3_tbxSdUyPuBoWoVwnyh6GOnjyA37-S1UK-XFZ5lEqRTaXv9eSSPJZYrJ9WYNMtMjxn0mcUU0VbDGzUXJV0IHd8HSzanjlqb9EirA-sVDUk9it2CSLhU8I4JLMsZ_QgEbGCQMJDIGBYw9E7rBJTfROGo3F89v2qgdRXH1cpeUdTISM2aU9Jj-fRxlTR5y-lPHlGaEreh_h5IAjj=w1280" alt="">
+  </figure>
+</div></section></div>
+
+<!-- TEACHING -->
+<div class="wrap"><section class="sec fi" id="teaching">
+  <div class="sec-head"><p class="sec-label">03</p><h2 class="sec-title">Teaching</h2></div>
+  <div class="duo"><div>
+    <h4 class="teach-sem">Spring 2026</h4>
+    <ul class="tl"><li>Introduction to Calculus and Vector Analysis (×2)</li><li>Numerical Data Processing</li></ul>
+    <h4 class="teach-sem">Fall 2025</h4>
+    <ul class="tl"><li>Partial Differential Equation and its Applications</li><li>Introduction to Calculus and Vector Analysis</li><li>Smart Financial Data Analysis</li></ul>
+    <h4 class="teach-sem">Spring 2025</h4>
+    <ul class="tl"><li>Introduction to Calculus and Vector Analysis</li><li>Actuarial Science</li><li>Numerical Data Processing</li></ul>
+    <h4 class="teach-sem">Fall 2024</h4>
+    <ul class="tl"><li>Introduction to Calculus and Vector Analysis (×2)</li><li>Smart Financial Data Analysis</li></ul>
+    <h4 class="teach-sem">Spring 2024 <small>(at KAIST)</small></h4>
+    <ul class="tl"><li>Calculus I</li></ul>
+  </div>
+  <figure class="duo-photo">
+    <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SRA6wpytkkIIiEbHqWm9GUCMiGbbB5N8YRmb5RZovHMcdiRF7X6VIzDi9Ly6UuzUe_LBbEEkKfnUNt5N6aGnzWAmjPt-tdPudyeSGQsQnd6xg2XSOGX7GWuJZ0cEQe-dEvGQhiilz94hlK5rF6s8Y6Qkrk2v76hJptfI-9OjYCs7ASZDxic01Nn0Yq556GxwwzU-6Dyg78SZJ2JbkfhybLal7ZmeNyYT4XV=w1280" alt="">
+    <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SQjwjw2ByPhgLKs3tOQcZoiQWN73gleJUV3A_Q6Y8WTtS_MGzWY5KkidwdYOfkIrSUK321aczfYAuFamJRT8UQxzfU632EWI5Bp_7n2d9CWQSgU7YZuBJWU0mzLMJ5oCkYHDbN124xdJcyWp868hAv91gyEydoNNKLlze9JQT-IhlpXg0LQIo41mSXjQvoyV5iD20ZzVSiiXrJGc7qnHNPD2nmqDJdcIzUCGpk=w1280" alt="">
+  </figure>
+</div></section></div>
+
+<!-- CV -->
+<div class="wrap"><section class="sec fi" id="cv">
+  <div class="sec-head"><p class="sec-label">04</p><h2 class="sec-title">CV</h2></div>
+  <div class="duo"><div>
+    <p class="cv-cat">Employment</p>
+    <div class="cv-row"><span class="cv-d">2024.9 – now</span><div class="cv-c"><strong>Assistant Professor</strong>, Sungshin Women's University</div></div>
+    <div class="cv-row"><span class="cv-d">2024.2 – 2024.8</span><div class="cv-c"><strong>Research Professor</strong>, KAIST (SAARC)</div></div>
+    <div class="cv-row"><span class="cv-d">2022.3 – 2024.2</span><div class="cv-c"><strong>Postdoctoral Fellow</strong>, Seoul National University (RIM)</div></div>
+    <p class="cv-cat">Education</p>
+    <div class="cv-row"><span class="cv-d">2015 – 2022</span><div class="cv-c"><strong>Ph.D. Mathematics</strong>, Seoul National University<br>Advisor: <a href="https://www.math.snu.ac.kr/~kiahm/">Ki-Ahm Lee</a></div></div>
+    <div class="cv-row"><span class="cv-d">2009 – 2015</span><div class="cv-c"><strong>B.S. Mathematics</strong>, Seoul National University<br>Minor: Financial Economics, Financial Mathematics</div></div>
+    <p class="cv-cat">Fellowships & Grants</p>
+    <div class="cv-row"><span class="cv-d">2025 – 2026</span><div class="cv-c"><strong>Start-Up Research Grant</strong>, Sungshin Women's Univ.</div></div>
+    <div class="cv-row"><span class="cv-d">2024 – 2029</span><div class="cv-c"><strong>Sejong Science Fellowship</strong>, NRF Korea</div></div>
+    <div class="cv-row"><span class="cv-d">2017 – 2018</span><div class="cv-c"><strong>Fellowship for Fundamental Academic Fields</strong>, SNU</div></div>
+  </div>
+  <figure class="duo-photo">
+    <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SQsi5e-LskW6v4yhkm4_zQq7gULLvY6bFs3UxOGrlfU_JQtnMbdKIJ6PfPo_sWnyecq01Z7WLUgF-ziUQIIRrMjd77cGQ9aeBlTp01pSNFoAr-PUqON_3AJ6OShlIRauMQcjYgAU_1z447McDg9V6XIqa1GPfLYSTxAQwr5bAw_iAbAtY0dGtKrAr5aR68TRfFucFAwIeZFajK4Q3sg7R_ciiRuAp_spM9zaD0=w1280" alt="">
+  </figure>
+</div></section></div>
+
+<!-- LINKS -->
+<div class="wrap"><section class="sec fi" id="links">
+  <div class="sec-head"><p class="sec-label">05</p><h2 class="sec-title">Links</h2></div>
+  <div class="links-row">
+    <a class="lnk" href="https://arxiv.org/a/0000-0002-2595-5319.html"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17L17 7"/></svg>arXiv</a>
+    <a class="lnk" href="https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=5731503"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17L17 7"/></svg>SSRN</a>
+    <a class="lnk" href="https://orcid.org/0000-0002-2595-5319"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17L17 7"/></svg>ORCID</a>
+    <a class="lnk" href="https://mathscinet.ams.org/mathscinet/MRAuthorID/1539834"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17L17 7"/></svg>MathSciNet</a>
+    <a class="lnk" href="https://www.researchgate.net/profile/Takwon-Kim"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17L17 7"/></svg>ResearchGate</a>
+    <a class="lnk" href="https://scholar.google.com/citations?user=Hvyhf20AAAAJ&hl=ko"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17L17 7"/></svg>Google Scholar</a>
+    <a class="lnk" href="https://www.mathgenealogy.org/id.php?id=282301"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17L17 7"/></svg>Math Genealogy</a>
+  </div>
+</section></div>
+
+<footer><div class="foot-inner"><span>© 2026 Takwon Kim</span><span>Last updated March 2026</span></div></footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>10));
+const secs=document.querySelectorAll('section[id],.hero[id]');
+const lks=document.querySelectorAll('.nav-links a');
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){lks.forEach(a=>a.classList.remove('active'));const m=document.querySelector(`.nav-links a[href="#${e.target.id}"]`);if(m)m.classList.add('active')}})},{rootMargin:'-20% 0px -80% 0px'});
+secs.forEach(s=>io.observe(s));
+lks.forEach(a=>a.addEventListener('click',()=>document.getElementById('nl').classList.remove('open')));
+const fis=document.querySelectorAll('.fi');
+const fio=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');fio.unobserve(e.target)}})},{threshold:.06});
+fis.forEach(f=>fio.observe(f));
+</script>
+</body>
+</html>
